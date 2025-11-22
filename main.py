@@ -2,43 +2,48 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 import time
 
 def create_browser():
     options = Options()
-    options.headless = True  # run without opening a window
+    options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
-    browser = webdriver.Chrome(options=options)
+    options.add_argument("--disable-dev-shm-usage")
+
+    # IMPORTANT: set path for chromium
+    options.binary_location = "/usr/bin/chromium-browser"  # Try chromium-browser first
+
+    # If error, switch to: options.binary_location = "/usr/bin/chromium"
+    service = Service("/usr/bin/chromedriver")
+
+    browser = webdriver.Chrome(service=service, options=options)
     return browser
 
 def login(email, password):
     browser = create_browser()
     browser.get("https://ucha.se/login/")
-
-    time.sleep(2)  # wait for page to load
+    time.sleep(2)
 
     try:
-        # Find email and password input fields
         email_input = browser.find_element(By.NAME, "user[email]")
         password_input = browser.find_element(By.NAME, "user[password]")
 
-        # Enter credentials
         email_input.send_keys(email)
         password_input.send_keys(password)
-
-        # Submit login
         password_input.send_keys(Keys.RETURN)
-        time.sleep(3)  # wait for login to process
 
-        # Check login success
-        if "logout" in browser.page_source.lower() or "изход" in browser.page_source.lower():
+        time.sleep(3)
+
+        if "изход" in browser.page_source.lower() or "logout" in browser.page_source.lower():
             print("Login successful!")
             return browser
         else:
-            print("Login FAILED.")
+            print("Login failed.")
             browser.quit()
             return None
+
     except Exception as e:
         print("Error during login:", e)
         browser.quit()
@@ -50,13 +55,10 @@ def main():
 
     browser = login(email, password)
     if browser:
-        print("We are logged in and can continue...")
-        # Example: navigate to a page after login
+        print("Logged in. Opening homepage...")
         browser.get("https://ucha.se/")
         time.sleep(2)
-        print(browser.page_source[:500])  # first 500 chars of the page
-
-        # Close browser when done
+        print(browser.page_source[:200])
         browser.quit()
     else:
         print("Stopped.")
