@@ -1,7 +1,3 @@
-pip install selenium
-sudo apt update
-sudo apt upgrade
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
