@@ -12,11 +12,11 @@ def create_browser():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    # IMPORTANT: set path for chromium
-    options.binary_location = "/usr/bin/chromium-browser"  # Try chromium-browser first
+    # Use Google Chrome
+    options.binary_location = "/usr/bin/google-chrome"
 
-    # If error, switch to: options.binary_location = "/usr/bin/chromium"
-    service = Service("/usr/bin/chromedriver")
+    # Use installed chromedriver
+    service = Service("/usr/local/bin/chromedriver")
 
     browser = webdriver.Chrome(service=service, options=options)
     return browser
@@ -55,7 +55,7 @@ def main():
 
     browser = login(email, password)
     if browser:
-        print("Logged in. Opening homepage...")
+        print("Logged in! Going to homepage...")
         browser.get("https://ucha.se/")
         time.sleep(2)
         print(browser.page_source[:200])
