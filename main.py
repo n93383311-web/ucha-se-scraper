@@ -14,7 +14,7 @@ def create_browser():
 
 def login(email, password):
     browser = create_browser()
-    browser.get("https://ucha.se/users/sign_in")
+    browser.get("https://ucha.se/login/")
 
     time.sleep(2)  # wait for page to load
 
